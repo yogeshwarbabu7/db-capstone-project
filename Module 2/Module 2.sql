@@ -2,15 +2,15 @@
 Select * from OrdersView;
 
 -- JOIN Query
-Select `customers`.CustomerID, `customers`.Name, `menu`.name, `menuitems`.CourseName, `menuitems`.SaladName
+Select `customers`.CustomerID, `customers`.Name, `menu`.name, `MenuItems`.CourseName, `MenuItems`.SaladName
 FROM 
 `customers` inner join `order` on `customers`.CustomerID = `order`.CustomerID
 inner join `menu` on `order`.MenuID = `menu`.MenuID 
-inner join `menuitems` on `menu`.MenuItemID = `menuitems`.MenuItemID
+inner join `MenuItems` on `menu`.MenuItemID = `MenuItems`.MenuItemID
 Where `order`.TotalCost > 150;
 
 -- ANY Clause
-Select `menu`.Name from `menu` Where `menu`.MenuID = ANY (Select `order`.menuid from `order` where `order`.Quantity > 2); 
+Select `menu`.Name from `menu` Where `menu`.MenuID = ANY (Select `order`.MenuID from `order` where `order`.Quantity > 2);
 
 -- Stored Procedure
 Create Procedure GetMaxQuantity()
@@ -23,7 +23,7 @@ Prepare GetOrderDetail FROM 'SELECT `order`.OrderID, `order`.Quantity, `order`.T
 SET @id = 2;
 EXECUTE GetOrderDetail USING @id;
 
--- Stored Prcedure - CancelOrder 
+-- Stored Procedure - CancelOrder
 DELIMITER //
 Create Procedure CancelOrder(orderId INT)
 BEGIN
