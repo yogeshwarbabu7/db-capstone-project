@@ -36,4 +36,4 @@ Delete from `order` where `order`.OrderID = orderID;
 END//
 DELIMITER ;
 
-CALL CancelOrder(3);
+CALL CancelOrder(2);
