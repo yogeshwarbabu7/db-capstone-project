@@ -5,31 +5,35 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema LittleLemonDB
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema littlelemondb
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema LittleLemonDB
+-- Schema littlelemondb
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `LittleLemonDB` DEFAULT CHARACTER SET utf8 ;
-USE `LittleLemonDB` ;
+CREATE SCHEMA IF NOT EXISTS `littlelemondb` DEFAULT CHARACTER SET utf8mb3 ;
+USE `littlelemondb` ;
 
 -- -----------------------------------------------------
--- Table `LittleLemonDB`.`Customers`
+-- Table `littlelemondb`.`customers`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Customers` (
+CREATE TABLE IF NOT EXISTS `littlelemondb`.`customers` (
   `CustomerID` INT NOT NULL AUTO_INCREMENT,
   `Name` VARCHAR(45) NOT NULL,
   `PhoneNumber` VARCHAR(45) NOT NULL,
   `Email` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`CustomerID`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `LittleLemonDB`.`Bookings`
+-- Table `littlelemondb`.`bookings`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Bookings` (
+CREATE TABLE IF NOT EXISTS `littlelemondb`.`bookings` (
   `BookingID` INT NOT NULL AUTO_INCREMENT,
   `TableNo` INT NOT NULL,
   `BookingDate` DATE NOT NULL,
@@ -37,67 +41,65 @@ CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Bookings` (
   PRIMARY KEY (`BookingID`),
   INDEX `CustomerID_idx` (`CustomerID` ASC) VISIBLE,
     FOREIGN KEY (`CustomerID`)
-    REFERENCES `LittleLemonDB`.`Customers` (`CustomerID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `littlelemondb`.`customers` (`CustomerID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `LittleLemonDB`.`Order`
+-- Table `littlelemondb`.`menuitems`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Order` (
+CREATE TABLE IF NOT EXISTS `littlelemondb`.`menuitems` (
+  `MenuItemID` INT NOT NULL AUTO_INCREMENT,
+  `CourseName` VARCHAR(100) NOT NULL,
+  `SaladName` VARCHAR(100) NOT NULL,
+  `DessertName` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`MenuItemID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `littlelemondb`.`menu`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `littlelemondb`.`menu` (
+  `MenuID` INT NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(45) NOT NULL,
+  `Cusine` VARCHAR(45) NOT NULL,
+  `MenuItemID` INT NOT NULL,
+  PRIMARY KEY (`MenuID`),
+  INDEX `MenuItemID_idx` (`MenuItemID` ASC) VISIBLE,
+    FOREIGN KEY (`MenuItemID`)
+    REFERENCES `littlelemondb`.`menuitems` (`MenuItemID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `littlelemondb`.`order`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `littlelemondb`.`order` (
   `OrderID` INT NOT NULL AUTO_INCREMENT,
   `CustomerID` INT NOT NULL,
   `OrderDate` DATE NOT NULL,
   `TotalCost` DECIMAL(10,2) NOT NULL,
+  `Quantity` INT NOT NULL,
+  `MenuID` INT NOT NULL,
   PRIMARY KEY (`OrderID`),
   INDEX `CustomerID_idx` (`CustomerID` ASC) VISIBLE,
+  INDEX `MenuID_idx` (`MenuID` ASC) VISIBLE,
+    FOREIGN KEY (`MenuID`)
+    REFERENCES `littlelemondb`.`menu` (`MenuID`),
     FOREIGN KEY (`CustomerID`)
-    REFERENCES `LittleLemonDB`.`Customers` (`CustomerID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `littlelemondb`.`customers` (`CustomerID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `LittleLemonDB`.`Menu`
+-- Table `littlelemondb`.`orderdeliverystatus`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Menu` (
-  `ItemID` INT NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(45) NOT NULL,
-  `Category` ENUM('Cuisine', 'Starter', 'Course', 'Drink', 'Dessert') NOT NULL,
-  `Price` DECIMAL(8,2) NOT NULL,
-  PRIMARY KEY (`ItemID`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `LittleLemonDB`.`OrderItems`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`OrderItems` (
-  `OrderItemID` INT NOT NULL AUTO_INCREMENT,
-  `OrderID` INT NOT NULL,
-  `ItemID` INT NOT NULL,
-  `Quantity` INT NOT NULL,
-  PRIMARY KEY (`OrderItemID`),
-  INDEX `OrderID_idx` (`OrderID` ASC) VISIBLE,
-  INDEX `ItemID_idx` (`ItemID` ASC) VISIBLE,
-    FOREIGN KEY (`OrderID`)
-    REFERENCES `LittleLemonDB`.`Order` (`OrderID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-    FOREIGN KEY (`ItemID`)
-    REFERENCES `LittleLemonDB`.`Menu` (`ItemID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `LittleLemonDB`.`OrderDeliveryStatus`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`OrderDeliveryStatus` (
+CREATE TABLE IF NOT EXISTS `littlelemondb`.`orderdeliverystatus` (
   `StatusID` INT NOT NULL AUTO_INCREMENT,
   `OrderID` INT NOT NULL,
   `DeliveryDate` DATE NOT NULL,
@@ -105,22 +107,22 @@ CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`OrderDeliveryStatus` (
   PRIMARY KEY (`StatusID`),
   INDEX `OrderID_idx` (`OrderID` ASC) VISIBLE,
     FOREIGN KEY (`OrderID`)
-    REFERENCES `LittleLemonDB`.`Order` (`OrderID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `littlelemondb`.`order` (`OrderID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `LittleLemonDB`.`Staff`
+-- Table `littlelemondb`.`staff`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`Staff` (
+CREATE TABLE IF NOT EXISTS `littlelemondb`.`staff` (
   `StaffID` INT NOT NULL AUTO_INCREMENT,
   `Name` VARCHAR(45) NOT NULL,
   `Role` VARCHAR(45) NOT NULL,
   `Salary` DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (`StaffID`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
