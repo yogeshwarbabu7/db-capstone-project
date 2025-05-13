@@ -98,6 +98,7 @@ delimiter //
 create procedure AddBooking(bookingId int, customerId int, bookingDate date, tableNo int)
 begin
 declare stat int default 0;
+start transaction;
 insert into `bookings` (`bookings`.bookingId, `bookings`.customerId, `bookings`.bookingDate, `bookings`.tableNo)
 values (bookingId, customerId, bookingDate, tableNo);
 select count(*) into stat from `bookings` where `bookings`.bookingId = bookingId;
@@ -122,6 +123,7 @@ delimiter //
 create procedure UpdateBooking(bookingId int, bookingDate date)
 begin
 declare stat int default 0;
+start transaction;
 update `bookings` set `bookings`.bookingDate = bookingDate where `bookings`.bookingId = bookingId;
 select count(*) into stat from `bookings` where `bookings`.bookingId = bookingId and `bookings`.bookingDate = bookingDate;
 if stat > 0 then 
@@ -145,6 +147,7 @@ delimiter //
 create procedure CancelBooking(bookingId int)
 begin
 declare stat int default 0;
+start transaction;
 delete from `bookings` where `bookings`.bookingId = bookingId;
 select count(*) into stat from `bookings` where `bookings`.bookingId = bookingId;
 if stat = 0 then 
